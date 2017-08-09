@@ -1,0 +1,2015 @@
+﻿# RHEL共通パラメータ
+#試験項目  :基本動作確認項目(RHEL)
+#環境定義書:環境定義書(RHEL)
+rhel_common: &rhel_common
+  #試験項目  :ソフトウェアバージョン 項番1 > OSのバージョンの確認
+  #環境定義書:インストール情報(OSリリースバージョン)
+  :os_version: 'Red Hat Enterprise Linux Server release 6.4 \(Santiago\)'  #OS名・バージョンの正規表現
+
+  #試験項目  :ソフトウェアバージョン 項番2 > カーネルのバージョンの確認
+  #環境定義書:インストール情報(カーネルバージョン)
+  :kernel_version: 2.6.32-358.el6.x86_64
+
+  #試験項目  :ソフトウェアバージョン 項番3 > パッケージのバージョンの確認
+  #環境定義書:追加パッケージ
+  #下記は共通追加パッケージ、WebAPサーバとDBサーバ依存の追加パッケージはwa_commonおよびdb_commonに記述
+  #ロジック番号:01・03
+  :additional_package_rpm: &additional_package_rpm
+    #パッケージ名: 'パッケージバージョン'
+    sysstat: '9.0.4-20.el6.x86_64'
+    bash: '4.1.2-15.el6_5.2.x86_64'
+    glibc: '2.12-1.149.el6_6.5.x86_64'
+    glibc-common: '2.12-1.149.el6_6.5.x86_64'
+    glibc-devel: '2.12-1.149.el6_6.5.x86_64'
+    glibc-headers: '2.12-1.149.el6_6.5.x86_64'
+
+  #試験項目  :パラメータ設定　項番45 > パッケージとバージョンの確認
+  #環境定義書:追加パッケージ
+  #下記は共通追加パッケージで、WebAPサーバとDBサーバ依存の追加パッケージはwa_commonおよびdb_commonに記述
+  #ロジック番号:01・04
+  :additional_package_yum: &additional_package_yum
+    #パッケージ名: 'パッケージバージョン'
+
+  #試験項目  :パラメータ設定 項番1 > OSプラットフォームの確認
+  #環境定義書:インストール情報(プラットフォーム)
+  :platform_info: 'x86_64'  #('x64'の場合は'x86_64'と記述)
+
+  #試験項目  :パラメータ設定 項番3 > システム標準言語の確認
+  #環境定義書:インストール情報(システム標準言語)
+  :system_lang: LANG="ja_JP.UTF-8"
+
+  #試験項目  :パラメータ設定 項番4 > キーボードのタイプの確認
+  #環境定義書:インストール情報(キーボードのタイプ)
+  :keyboard: KEYTABLE="jp106"
+
+  #試験項目  :パラメータ設定 項番6 > タイムゾーン設定確認
+  #環境定義書:インストール情報(タイムゾーン)
+  :timezone: ZONE="Asia/Tokyo"
+  :utc_mode: LOCAL
+
+  #試験項目  :パラメータ設定 項番5 > ブートローダの設定確認
+  #環境定義書:カーネル起動時パラメータ
+  #ロジック番号:01
+  :grub_conf:
+    :filepath: '/boot/grub/grub.conf'
+    :key_val:
+      #<パラメータ名>:   <設定値>
+      'crashkernel':  'auto'
+      'nmi_watchdog': '1'
+      'elevator':     'cfq'
+
+  #試験項目  :パラメータ設定 項番7 > ファイアウォールの設定確認
+  #環境定義書:-
+  #ロジック番号:01
+  :iptables_rules:
+    'INPUT': ''
+    'FORWARD': ''
+    'OUTPUT': ''
+
+  #試験項目  :パラメータ設定 項番13 > ホスト名の確認
+  #環境定義書:ホスト名
+  #下記はサーバ共通のパラメータ、ホスト依存のパラメータはホストを定義する箇所で記述
+  #ロジック番号:01
+  :sysconfig_network: &sysconfig_network
+    #<パラメータ名>: <設定値>
+    NETWORKING: 'yes'
+    NOZEROCONF: 'yes'
+
+  #試験項目  :パラメータ設定 項番14 > ネットワークインターフェース設定の確認
+  #環境定義書:ネットワークインタフェース
+  #下記はサーバ共通のパラメータ、ホスト依存のパラメータはホストの定義箇所で記述
+  #ロジック番号:02と03
+  :interfaces:
+    eth_common: &interfaces_eth_common
+      #<項目名>:      <設定値>
+      DEVICE:        'ethX'
+      HWADDR:        ''
+      USERCTL:       'no'
+      ONBOOT:        'yes'
+      BOOTPROTO:     'none'
+      IPADDR:        ''
+      NETMASK:       '255.255.255.0'
+      BROADCAST:     ''
+      NM_CONTROLLED: 'no'
+      GATEWAY:       ''
+      MASTER:        ''
+      SLAVE:         ''
+      NAME:          ''
+      BONDING_OPTS:  ''
+      ETHTOOL_OPTS:  '"autoneg on speed 1000 duplex full"'
+
+  #試験項目  :パラメータ設定 項番15 > ホストファイルによる名前解決の確認
+  #環境定義書:名前解決定義
+  #ロジック番号:02と03
+  :hosts:
+    #<IPアドレス>:
+    # - <ホスト名・ドメイン>
+    "127.0.0.1":
+      - 'localhost'
+      - 'localhost.localdomain'
+      - 'localhost4'
+      - 'localhost4.localdomain4'
+    "::1":
+      - 'localhost'
+      - 'localhost.localdomain'
+      - 'localhost6'
+      - 'localhost6.localdomain6'
+
+  #試験項目  :パラメータ設定 項番15 > ホストファイルによる名前解決の確認
+  #環境定義書:名前解決方法
+  #ロジック番号:01
+  :nsswitch:
+    hosts: 'files'
+
+  #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+  #環境定義書:ユーザ
+  #下記はサーバ共通のユーザ、WebAPサーバ・DBサーバ依存のユーザはwebap_commonおよびdb_commonで記述
+  #ロジック番号:01
+  :users: &users
+    #<ユーザ名>:
+    #  uid: <uid>
+    #  gname: <所属グループ名>
+    #  home_dir: <ホームディレクトリ>
+    #  login_shell: <ログインシェル>
+    apache:
+      uid: '48'
+      gname: 'apache'
+      home_dir: '/var/www'
+      login_shell: '/sbin/nologin'
+    postfix:
+      uid: '89'
+      gname: 'postfix'
+      home_dir: '/var/spool/postfix'
+      login_shell: '/sbin/nologin'
+    sudoope:
+      uid: '2001'
+      gname: 'sudoope'
+      home_dir: '/home/sudoope'
+      login_shell: '/bin/bash'      
+    ope:
+      uid: '3001'
+      gname: 'ope'
+      home_dir: '/home/ope'
+      login_shell: '/bin/bash'
+
+  #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+  #環境定義書:グループ
+  #下記はサーバ共通のグループ、WebAPサーバ・DBサーバ依存のグループはwebap_commonおよびdb_commonで記述
+  #ロジック番号:02と03と04
+  :groups: &groups
+    #<グループ名>:
+    #  gid: <gid>
+    #  members:
+    #    - <所属ユーザ>
+    wheel:
+      gid: '10'
+      members:
+        - 'root'
+        - 'sudoope'
+    apache:
+      gid: '48'
+      members:
+        - 'apache'
+    mail:
+      gid: '12'
+      members:
+        - 'mail'
+        - 'postfix'
+    postdrop:
+      gid: '90'
+      members:
+    sudoope:
+      gid: '2001'
+      members:
+        - 'sudoope'
+    ope:
+      gid: '3001'
+      members:
+        - 'ope'
+
+  #試験項目  :パラメータ設定 項番17 > ユーザプロファイルの確認
+  #環境定義書:プロファイル
+  #ロジック番号:01
+  :profile:
+    common1: 'alias\s+rm="rm -i"'  #alias   rm="rm -i" の正規表現
+    common2: 'export\s+TMOUT=600'  #export  TMOUT=600 の正規表現
+    #PS1="(\H-\u \$(date +%Y/%m/%d-%H:%M:%S))\n\\\$ " の正規表現
+    common3: 'PS1="\(\\H-\\u\s\\\$\(date\s\+%Y\/%m\/%d-%H:%M:%S\)\)\\n\\\\\\\$\s"'
+
+  #試験項目  :パラメータ設定 項番18 > Upstartの確認
+  #環境定義書:upstart(init)
+  #ロジック番号:01
+  :control_alt_delete:
+    :comment_out:  #コメントアウト、または未定義パラメータ
+      common1: 'start on control-alt-delete'
+    :exec: '/sbin/shutdown -r now "Control-Alt-Delete pressed"'
+
+  #試験項目  :パラメータ設定 項番19 > kdumpマウント設定の確認
+  #環境定義書:ファイルシステムタブ
+  #補足説明  :サーバ共通値のみ記述
+  #ロジック番号:01
+  :fstab: &fstab
+    #/dev/mapper/vg00-lv_dump /dump  ext4 defaults,noauto 1 2　の正規表現
+    common1: '\/dev\/mapper\/vg00-lv_dump\s+\/dump\s+ext4\s+defaults,noauto\s+1\s+2'
+
+  #試験項目  :パラメータ設定 項番20 > カーネルパラメータの確認
+  #環境定義書:カーネルパラメータ
+  #下記はサーバ共通のカーネルパラメータ、WebAPサーバ・DBサーバ依存のパラメータはwebap_commonおよびdb_commonで記述
+  #ロジック番号:01
+  :sysctl: &sysctl
+    #<パラメータ名>: <設定値>
+    kernel.sysrq: 1
+    net.ipv4.ip_local_port_range: '32768\s+65000' #32768 65000 の正規表現
+    fs.suid_dumpable: 1
+    net.ipv4.tcp_tw_recycle: 0
+    net.ipv4.conf.all.arp_announce: 2
+    net.ipv4.conf.eth0.arp_announce: 2
+    net.ipv4.conf.eth0.arp_ignore: 1
+    net.core.rmem_max: 262144
+
+  #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+  #環境定義書:ディスク情報
+  #下記はサーバ共通のディスク情報、WebAPサーバ・DBサーバ依存のディスク情報はwebap_commonおよびdb_commonで記述、
+  #ホスト依存のディスク情報ホストの定義箇所で記述
+  #ロジック番号:02
+  :disks: &disks
+    #<ディスクファイル>:
+    #  SIZE: <容量(MB)>
+    #  FSTYPE:  <タイプ>
+    #  MOUNTPOINT:  <マウントポイント>
+    '/dev/sda1':
+      SIZE:       200
+      FSTYPE:     'ext4'
+      MOUNTPOINT: '\/boot'  #/boot　の正規表現
+    '/dev/mapper/vg00-lv_root':
+      SIZE:       25600
+      FSTYPE:     'ext4'
+      MOUNTPOINT: '\/'  #/ の正規表現
+    '/dev/mapper/vg00-lv_swap':
+      SIZE:       4096
+      FSTYPE:     'swap'
+      MOUNTPOINT: '\[SWAP\]' #[SWAP] の正規表現
+    '/dev/mapper/vg00-lv_var':
+      SIZE:       8192
+      FSTYPE:     'ext4'
+      MOUNTPOINT: '\/var'  #/var の正規表現
+    '/dev/mapper/vg00-lv_dump': &disks_dump
+      SIZE:       4304
+      FSTYPE:     'ext4'
+      MOUNTPOINT: '\/dump'  #/dump の正規表現
+
+  #試験項目  :パラメータ設定 項番22 > kdumpの確認
+  #環境定義書:ダンプ
+  #ロジック番号:01
+  :kdump:
+    ext4: '\/dev\/mapper\/vg00-lv_dump'  #/dev/mapper/vg00-lv_dump の正規表現
+    path: '\/var\/crash'  #/var/crash の正規表現
+    core_collector: 'makedumpfile -d 0 -c'
+    default: 'reboot'
+
+  #試験項目  :パラメータ設定 項番23 > ABRTの確認
+  #環境定義書:ABRT
+  #ロジック番号:01
+  :abrt_action_save_package_data:  #abrt-action-save-package-data.conf
+    :key_val:
+      OpenGPGCheck: 'no'
+      ProcessUnpackaged: 'yes'
+  :abrt:  #abrt.conf
+    :key_val:
+      MaxCrashReportsSize: '0'
+    :comment_out:  #コメントアウト、または未定義設定値
+      common1: 'DumpLocation'
+  :ccpp_event:  #ccpp_event.conf
+    :comment_out:  #コメントアウト、または未定義設定値
+      common1: 'EVENT=post-create'
+  :abrt_event:  #abrt_event.conf
+    :comment_out:  #コメントアウト、または未定義設定値
+      common1: 'EVENT=post-create\s+reporter-mailx\s+--notify-only'  #EVENT=post-create reporter-mailx --notify-only の正規表現
+  :ccpp:  #ccpp.conf
+    :key_val:
+      MakeCompatCore: 'no'
+
+  #試験項目  :パラメータ設定 項番24 > ユーザリミットの確認
+  #環境定義書:ユーザリミット
+  #下記はサーバ共通の設定値、WebAPサーバ・DBサーバ依存設定値はwebap_commonおよびdb_commonで記述
+  #ロジック番号:01
+  #limits.conf
+  :limits: &limits
+    common1: '\*\s+soft\s+core\s+unlimited'   #*     soft    core      unlimited  の正規表現
+    common2:  '\*\s+hard\s+core\s+unlimited'  #*     hard    core      unlimited  の正規表現
+    common3: 'root\s*soft\s+nofile\s+65536'   #root  soft    nofile    65536  の正規表現
+    common4: 'root\s+hard\s+nofile\s+65536'   #root  hard    nofile    65536  の正規表現
+  #90-nproc.conf
+  :nproc_90:
+    common1: '\*\s+soft\s+nproc\s+1024'  #*  soft    nproc    1024  の正規表現
+  #環境定義書:pam.dのlogin設定
+  #ロジック番号:01
+  :pam_d_login:
+    common1: 'session\s+required\s+pam_limits\.so'  #session required pam_limits.so  の正規表現
+
+  #試験項目  :パラメータ設定 項番25 > pam.dのsu設定
+  #環境定義書:pam.dのsu設定
+  #ロジック番号:01
+  :pam_d_su:
+    common1: 'auth\s+required\s+pam_wheel.so\s+use_uid'  #auth required pam_wheel.so use_uid  の正規表現
+
+  #試験項目  :パラメータ設定 項番26 > ntpの設定
+  #環境定義書:NTPクライアント
+  #ロジック番号:01
+  #ntp.conf
+  :ntp_conf: &ntp_conf
+    :comment_out: &ntp_conf_comment_out
+      common1: 'restrict -6 default kod nomodify notrap nopeer noquery'
+      common2: 'restrict -6 ::1'
+    :strings: &ntp_conf_strings
+      common1: 'server proavmhm001 minpoll 6 maxpoll 8'
+      common2: 'server proavmhm002 minpoll 6 maxpoll 8'
+      common3: 'tos orphan 5'
+  #ntpdate
+  :ntpdate:
+    SYNC_HWCLOCK: 'yes'
+
+  #試験項目  :パラメータ設定 項番26 > ntpの設定
+  #環境定義書:NTPデーモン
+  #ロジック番号:01
+  :sysconfig_ntpd:
+    OPTIONS: '"-x -u ntp:ntp -p /var/run/ntpd.pid -g"'
+
+  #試験項目  :パラメータ設定 項番27 > rsyslogの確認
+  #環境定義書:rsyslog
+  #ロジック番号:01
+  :rsyslog:
+    :comment_out: &rsyslog_comment_out
+      #コメントアウト、または未定義設定値
+      common1: '\$ModLoad imudp'    #$ModLoad imudp  の正規表現
+      common2: '\$UDPServerRun 514' #$UDPServerRun 514  の正規表現
+      common3: '\$ModLoad imtcp'    #$ModLoad imtcp  の正規表現
+      common4: '\$InputTCPServerRun 514'    #$InputTCPServerRun 514  の正規表現
+      common5: '\$SystemLogRateLimitBurst'  #$SystemLogRateLimitBurst  の正規表現
+      common6: '\$SystemLogRateLimitSeverity'  #$SystemLogRateLimitSeverity  の正規表現
+    :key_val: &rsyslog_key_val
+      #<パラメータ名>: <設定値>
+      '\$ActionFileDefaultTemplate': 'mytemplate1'  #$ActionFileDefaultTemplate の正規表現
+      '\$SystemLogRateLimitInterval': '0'  #$SystemLogRateLimitInterval の正規表現
+      '\$EscapeControlCharactersOnReceive': 'off'  #$EscapeControlCharactersOnReceive の正規表現
+    :strings: &rsyslog_strings
+      #<インデックス>: <パラメータ名 + 設定値>
+      #$template mytemplate1,"%timegenerated% %hostname% \<%syslogfacility-text%.%syslogseverity-text%\> %syslogtag%%msg%\n" の正規表現
+      common1: '\$template\s+mytemplate1,"%timegenerated% %hostname% \\<%syslogfacility-text%\.%syslogseverity-text%\\> %syslogtag%%msg%\\n"'
+      #*.info;mail.none;authpriv.none;cron.none /var/log/messagesの正規表現
+      common2: '\*\.info;mail\.none;authpriv\.none;cron\.none\s+\/var\/log\/messages'
+
+  #試験項目  :パラメータ設定 項番28 > ログローテーションの確認（共通設定）
+  #環境定義書:ログローテーション共通
+  #ロジック番号:01
+  :logrotate_conf:
+    :strings: #設定値
+      common1: '^weekly'    #weeklyで始まる行 の正規表現
+      common2: '^rotate 4'  #rotate 4で始まる行 の正規表現
+      common3: '^create'    #createで始まる行 の正規表現
+      common4: '^include \/etc\/logrotate\.d'  #include /etc/logrotate.dで始まる行 の正規表現
+      common5: '^dateext'   #dateextで始まる行 の正規表現
+    :undefined_or_comment_out:  #コメントアウト、または未定義設定値
+      common1: 'compress'
+      common2: '^(no|)delaycompress' #delaycompressかnodelaycompressで始まる行 の正規表現
+      common3: '^compresscmd'        #compresscmdで始まる行 の正規表現
+      common4: '^uncompresscmd'      #uncompresscmdで始まる行 の正規表現
+      common5: '^compressext'        #compressextで始まる行 の正規表現
+      common6: '^compressoptions'    #compressoptionsで始まる行 の正規表現
+      common7: '^(no|)copy'          #copyかnocopyで始まる行 の正規表現
+      common8: '^(no|)copytruncate'  #copytruncateかnocopytruncateで始まる行　の正規表現
+      common9: '^extension'          #extensionで始まる行 の正規表現
+      common10: '^(not|)ifempty'     #ifemptyかnotifemptyで始まる行　の正規表現
+      common11: '^(no|)mail'         #mailかnomailで始まる行　の正規表現
+      common12: '^mail(first|last)'  #mailfirstかmaillastで始まる行　の正規表現
+      common13: '^(no|)missingok'    #missingokかnomissingokで始まる行　の正規表現
+      common14: '^(no|)olddir'       #olddirかolddirで始まる行　の正規表現
+      common15: '^(no|)sharedscripts'  #sharedscriptsかnosharedscriptsで始まる行　の正規表現
+      common16: '^firstaction'  #firstactionで始まる行 の正規表現
+      common17: '^prerotate'    #prerotateで始まる行 の正規表現
+      common18: '^postrotate'   #postrotateで始まる行 の正規表現
+      common19: '^lastaction'   #lastactionで始まる行 の正規表現
+      common20: '^size'         #sizeで始まる行 の正規表現
+      common21: '^start'        #startで始まる行 の正規表現
+      common22: '^tabooext'     #tabooextで始まる行 の正規表現
+
+  #試験項目  :パラメータ設定 項番30 > ログローテーションの確認（個別設定）
+  #環境定義書:ログローテーション個別(OS)
+  #ロジック番号:01
+  :logrotate_d: &logrotate_d
+      :syslog:  #syslog
+        :strings:  #設定値
+          common1: '\/var\/log\/cron'     #/var/log/cron の正規表現
+          common2: '\/var\/log\/messages' #/var/log/messages の正規表現
+          common3: '\/var\/log\/secure'   #/var/log/secure の正規表現
+          common4: '\/var\/log\/spooler'  #/var/log/spooler の正規表現
+          common5: 'daily'
+          common6: 'ifempty'
+          common7: 'missingok'
+          common8: 'sharedscripts'
+          common9: 'rotate 7'
+        :block_strings:
+          common1:  #postrotateとendscriptの間に記述されたコマンド
+            start:  'postrotate'
+            #/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true の正規表現
+            string: '\/bin\/kill -HUP `cat \/var\/run\/syslogd.pid 2> \/dev\/null` 2> \/dev\/null \|\| true'
+            end:    'endscript'
+      :snmpd:  #snmpd
+        :strings:  #設定値
+          common1: '\/var\/log\/snmpd.log'  #/var/log/snmpd.log の正規表現
+          common2: 'daily'
+          common3: 'ifempty'
+          common4: 'missingok'
+          common5: 'rotate 7'  
+        :block_strings:
+          common1:  #postrotateとendscriptの間に記述されたコマンド
+            start:  'postrotate'
+            #/sbin/service snmpd condrestart 2> /dev/null > /dev/null || true の正規表現
+            string: '\/sbin\/service snmpd condrestart 2> \/dev\/null > \/dev\/null \|\| true'
+            end:    'endscript'
+
+  #試験項目  :パラメータ設定 項番31 > cron設定の確認
+  #環境定義書:cron
+  :cron:
+    :root: '0 * * * * (/root/watch/getResources >> /var/log/cron 2>&1) > /dev/null'
+
+  #試験項目  :パラメータ設定 項番32 > crontab設定の確認
+  #環境定義書:crontab
+  #ロジック番号:01
+  :crontab:
+    MAILTO: '""'
+
+  #試験項目  :パラメータ設定 項番33 > anacrontab設定の確認
+  #環境定義書:anacrontab
+  #ロジック番号:01
+  :anacrontab:
+    :key_val:
+      MAILTO: '""'
+      RANDOM_DELAY: '45'
+      START_HOURS_RANGE: '3-22'
+    :strings:
+      #1 5 cron.daily (nice run-parts /etc/cron.daily >> /var/log/cron 2>&1) > /dev/null の正規表現
+      common1: '1\s+5\s+cron\.daily\s+\(nice run-parts \/etc\/cron\.daily >> \/var\/log\/cron 2>&1\) > \/dev\/null'
+      #7 25 cron.weekly (nice run-parts /etc/cron.weekly >> /var/log/cron 2>&1) > /dev/null の正規表現
+      common2: '7\s+25\s+cron\.weekly\s+\(nice run-parts \/etc\/cron\.weekly >> \/var\/log\/cron 2>&1\) > \/dev\/null'
+      #@monthly 45 cron.monthly (nice run-parts /etc/cron.monthly >> /var/log/cron 2>&1) > /dev/null の正規表現
+      common3: '@monthly\s+45\s+cron.monthly\s+\(nice run-parts \/etc\/cron\.monthly >> \/var\/log\/cron 2>&1\) > \/dev\/null'
+
+  #試験項目  :パラメータ設定 項番34 > cron(0hourly)の確認
+  #環境定義書:cron(0hourly)
+  #ロジック番号:01
+  :cron_d_0hourly:
+    :key_val:
+      MAILTO: '""'
+    :strings:
+      #01 * * * * root (run-parts /etc/cron.hourly >> /var/log/cron 2>&1) > /dev/null の正規表現
+      common1: '01 \* \* \* \* root \(run-parts \/etc\/cron\.hourly >> \/var\/log\/cron 2>&1\) > \/dev\/null'
+
+  #試験項目  :パラメータ設定 項番35 > cronジョブの確認
+  #環境定義書:cronジョブ
+  #ロジック番号:01
+  :cron_jobs: &cron_jobs
+    #存在すべきcronジョブ
+    #<cronジョブ名>: <cron実行ファイル>
+    0hourly: '/etc/cron.d/'
+    sysstat: '/etc/cron.d/'
+    0anacron: '/etc/cron.hourly/'
+    mcelog.cron: '/etc/cron.hourly/'
+    cups: '/etc/cron.daily/'
+    logrotate: '/etc/cron.daily/'
+    prelink: '/etc/cron.daily/'
+    tmpwatch: '/etc/cron.daily/'
+    readahead-monthly.cron: '/etc/cron.monthly/'
+    getResources: '/root/watch/'
+  :cron_jobs_not: &cron_jobs_not
+    #削除対象cronジョブ
+    #<cronジョブ名>: <cron実行ファイル>
+    raid-check: '/etc/cron.d/'
+    makewhatis.cron: '/etc/cron.daily/'
+    mlocate.cron: '/etc/cron.daily/'
+    readahead.cron: '/etc/cron.daily/'
+    rhsmd: '/etc/cron.daily/'
+
+  #試験項目  :IPアドレス設定 項番1 > ipv6設定の確認
+  #環境定義書:modprobe
+  #ロジック番号:01
+  :disable_ipv6:
+    common1: 'options ipv6 disable=1'
+
+  #試験項目  :プロセス 項番1 > OS（本体）のランレベルの確認
+  #環境定義書:ランレベル
+  #ロジック番号:01
+  :inittab:
+    common1: 'id:3:initdefault:'
+
+  #試験項目  :プロセス 項番2 > 起動サービスの対象・ランレベルの確認
+  #環境定義書:起動サービス
+  #ロジック番号:02と03
+  #下記はサーバ共通のサービス、WebAPサーバ・DBサーバ依存のサービスはwebap_commonおよびdb_commonで記述
+  :services: &services
+    #<サービス名>: <起動設定値>
+    'abrt-ccpp': '35'
+    'abrt-oops': '35'
+    'abrtd': '35'
+    'acpid': '2345'
+    'atd': '345'
+    'auditd': 'off'
+    'autofs': 'off'
+    'bluetooth': 'off'
+    'certmonger': 'off'
+    'cgconfig': 'off'
+    'cgred': 'off'
+    'cpuspeed': 'off'
+    'crond': '2345'
+    'cups': 'off'
+    'dnsmasq': 'off'
+    'firstboot': 'off'
+    'haldaemon': '345'
+    'hinemos_agent': '2345'
+    'ip6tables': 'off'
+    'ipsec': 'off'
+    'iptables': 'off'
+    'irqbalance': '345'
+    'kdump': '235'
+    'lvm2-monitor': 'off'
+    'mcelogd': '35'
+    'mdmonitor': 'off'
+    'messagebus': '2345'
+    'netconsole': 'off'
+    'netfs': 'off'
+    'network': '2345'
+    'NetworkManager': 'off'
+    'nfs': 'off'
+    'nfslock': 'off'
+    'ntpd': '235'
+    'ntpdate': 'off'
+    'numad': 'off'
+    'oddjobd': 'off'
+    'portreserve': 'off'
+    'postfix': 'off'
+    'psacct': 'off'
+    'quota_nld': 'off'
+    'rdisc': 'off'
+    'restorecond': 'off'
+    'rhnsd': 'off'
+    'rhsmcertd': 'off'
+    'rpcbind': '2345'
+    'rpcgssd': 'off'
+    'rpcidmapd': 'off'
+    'rpcsvcgssd': 'off'
+    'rsyslog': '2345'
+    'saslauthd': 'off'
+    'smartd': 'off'
+    'snmpd': '235'
+    'snmptrapd': 'off'
+    'spice-vdagentd': '5'
+    'sshd': '2345'
+    'sssd': 'off'
+    'sysstat': '12345'
+    'udev-post': '12345'
+    'vncserver': 'off'
+    'wdaemon': 'off'
+    'wpa_supplicant': 'off'
+    'ypbind': 'off'
+
+  #試験項目  :パラメータ設定 項番36 > Net-SNMP設定の確認
+  #環境定義書:Net-SNMP(1)
+  #ロジック番号:01
+  :snmpd_conf:
+    :comment_out: &snmpd_conf_comment_out
+      #コメントアウト、または未定義設定値
+      common1: 'notConfigUser\s+default\s+public'  #notConfigUser default public の正規表現
+    :values: &snmpd_conf_values
+      common1: 'com2sec\s+management\s+10\.197\.82\.0\/24\s+prorize' #com2sec management 10.197.82.0/24 prorize の正規表現
+      common2: 'group\s+prorize_group\s+v1\s+management'             #group prorize_group v1 management の正規表現
+      common3: 'group\s+prorize_group\s+v2c\s+management'            #group prorize_group v2c management の正規表現
+      common4: 'view\s+systemview\s+included\s+\.1\.3\.6\.1'         #view systemview included .1.3.6.1 の正規表現
+      #access prorize_group "" any noauth exact systemview none none の正規表現
+      common5: 'access\s+prorize_group\s+""\s+any\s+noauth\s+exact\s+systemview\s+none\s+none'
+
+  #試験項目  :パラメータ設定 項番36 > Net-SNMP設定の確認
+  #環境定義書:Net-SNMP(2)
+  #ロジック番号:01
+  :sysconfig_snmpd: &sysconfig_snmpd
+    :key_val:
+      #"-LF 5 /var/log/snmpd.log -Lf /dev/null -p /var/run/snmpd.pid -a -I -smux" の正規表現
+      OPTIONS: '"-LF 5 \/var\/log\/snmpd.log -Lf \/dev\/null -p \/var\/run\/snmpd.pid -a -I -smux"'
+
+  #試験項目  :パラメータ設定 項番41 > リゾルバの確認
+  #環境定義書:リゾルバ
+  #ロジック番号:01
+  :resolv: &resolv
+    :comment_out: &resolv_comment_out
+      #コメントアウト、または未定義設定値
+      common1: 'nameserver'
+
+  #試験項目  :パラメータ設定　項番42 > sudoの確認
+  #環境定義書:sudo
+  #ロジック番号:01
+  :sudoers: &sudoers
+    :comment_out: &sudoers_comment_out
+      #コメントアウト、または未定義設定値
+      common1: 'Defaults requiretty'
+    :sudoope: &sudoers_sudoope
+      common1: '%sudoope ALL=\(ALL\) NOPASSWD:ALL'  #%sudoope ALL=(ALL) NOPASSWD:ALL の正規表現
+
+  #試験項目  :確認漏れの環境定義書シート
+  #環境定義書:pam.dのpassword-auth設定
+  #ロジック番号:01
+  :password_auth:
+    :pam_cracklib_so:
+      #<設定項目>: <設定値>
+      minlen:  '8'
+      dcredit: '-1'
+      ucredit: '-1'
+      lcredit: '-1'
+      ocredit: '-1'
+    :pam_tally2_so:
+      #<設定項目>: <設定値>
+      deny:        '5'
+      unlock_time: '1800'
+
+  #試験項目  :確認漏れの環境定義書シート
+  #環境定義書:遠隔ログイン設定
+  #ロジック番号:01・04
+  #sshd
+  :pam_d_sshd: &pam_d_sshd
+    common1: 'account\s+required\s+pam_access.so'  #account required pam_access.so の正規表現
+  #access.conf
+  :access_conf:
+    common1: '\-\s*:\s*ALL\s+EXCEPT\s+root\s+sudoope\s+ope\s*:\s*ALL'  #-:ALL EXCEPT root sudoope ope :ALL の正規表現
+  #sshd_config
+  :sshd_config: &sshd_config
+    :key_val: &sshd_config_key_val
+      #<項目>: <設定値>
+      PermitRootLogin:      'no'
+      UseDNS:               'no'
+      GSSAPIAuthentication: 'no'
+      UsePAM:               'yes'
+      MaxAuthTries:         '6'
+      MaxStartups:          '15:80:30'
+
+#################
+# Apache共通パラメータ
+#試験項目  :基本動作確認項目(Apache)
+#環境定義書:環境定義書(Apache)
+apache_common: &apache_common
+  #試験項目  : ソフトウェアバージョン 項番1 >  Apacheのバージョンを確認
+  #環境定義書:前提事項
+  #ロジック番号:01
+  :version:
+    httpd: '2.2.15'
+    httpd-tools: '2.2.15'
+  :'httpd.worker_version': 'Server version: Apache\/2.2.15 \(Unix\)'  #Server version: Apache/2.2.15 (Unix) の正規表現
+
+  #試験項目  :プロトコル・ポート 項番1 > TCPポート番号を確認
+  #試験項目  :プロトコル・ポート 項番2 > TCPポート番号(SSL)を確認
+  #環境定義書:-
+  #ロジック番号:01
+  :port: 
+    :http: 80
+    :https: 443
+
+  #試験項目  : ファイル配置の確認 項番1 > パーミッション・オーナー設定確認
+  #環境定義書:-
+  #ロジック番号:01
+  :conf_files:
+    :httpd.conf:
+      :file: '/etc/httpd/conf/httpd.conf'
+      :owner: 'root'
+      :permission: '644'
+    :sysconfig:
+      :file: '/etc/sysconfig/httpd'
+      :owner: 'root'
+      :permission: '644'
+    :logrotate.d:
+      :file: '/etc/logrotate.d/httpd'
+      :owner: 'root'
+      :permission: '644'
+
+  #試験項目  :パラメータ設定 項番6 > faviconの確認
+  #環境定義書: -
+  :favicon: '/var/www/html/favicon.ico'
+
+  #試験項目  :パラメータ設定 項番2 > 設定ファイルの確認
+  #環境定義書:動作モード選択（httpd）
+  #ロジック番号:01・03
+  :sysconfig_httpd: &sysconfig_httpd
+    'HTTPD': 'HTTPD=/usr/sbin/httpd.worker'
+    'OPTIONS': ''
+    'HTTPD_LANG': ''
+    'LOCKFILE': 'LOCKFILE=/var/lock/subsys/httpd.worker'
+    'ulimit -HS -n': 'ulimit -HS -n 65536'
+    'ulimit -HS -u': ''
+
+  #試験項目  :パラメータ設定 項番2 > 設定ファイルの確認
+  #環境定義書:基本設定(httpd.conf)
+  #ロジック番号:02・03
+  #設定値があるパラメータをEXISTSに記述、コメントアウトするパラメータはCOMMENT_OUTSに記述
+  :httpd_conf: &httpd_conf
+    :EXISTS:  #存在すべきパラメータ
+      #サーバ設定
+      ServerTokens: 'ProductOnly'
+      ServerRoot: '"/etc/httpd"'
+      PidFile: 'run/httpd.pid'
+      Timeout: '320'
+      KeepAlive: 'Off'
+      'ifModule worker.c':  #<IfModule worker.c>配下のパラメータ
+        'ServerLimit':  '16'
+        'ThreadLimit':  '64'
+        'StartServers': '16'
+        'MaxClients':   '1024'
+        'MinSpareThreads': '100'
+        'MaxSpareThreads': '1024'
+        'ThreadsPerChild': '64'
+        'MaxRequestsPerChild': '0'
+      User: 'apache'
+      Group: 'apache'
+      Listen: '80'
+      #モジュール設定
+      'LoadModule':
+        - 'auth_basic_module modules/mod_auth_basic.so'
+        - 'auth_digest_module modules/mod_auth_digest.so'
+        - 'authn_file_module modules/mod_authn_file.so'
+        - 'authn_anon_module modules/mod_authn_anon.so'
+        - 'authn_default_module modules/mod_authn_default.so'
+        - 'authz_host_module modules/mod_authz_host.so'
+        - 'authz_user_module modules/mod_authz_user.so'
+        - 'authz_default_module modules/mod_authz_default.so'
+        - 'include_module modules/mod_include.so'
+        - 'log_config_module modules/mod_log_config.so'
+        - 'deflate_module modules/mod_deflate.so'
+        - 'setenvif_module modules/mod_setenvif.so'
+        - 'mime_module modules/mod_mime.so'
+        - 'negotiation_module modules/mod_negotiation.so'
+        - 'dir_module modules/mod_dir.so'
+        - 'alias_module modules/mod_alias.so'
+        - 'rewrite_module modules/mod_rewrite.so'
+      ServerName: 'www.prorize.co.jp:80'
+      TraceEnable: 'Off'
+      DocumentRoot: '/var/www/html'
+      'SetEnvIf':
+        - 'Request_URI "\.(bmp|BMP|css|CSS|gif|GIF|jpg|JPG|jpeg|JPEG|js|JS|ico|ICO|png|PNG|tif|TIF|tiff|TIFF|wmf|WMF)$" nolog'
+      'Directory /':  #ディレクトリ設定 ( / )
+        'Options':       'FollowSymLinks'
+        'AllowOverride': 'None'
+        'Order':         'deny,allow'
+        'Deny from':     'all'
+      'Directory /var/www/html':  #ディレクトリ設定 ( /var/www/html )
+        'Options':       'FollowSymLinks'
+        'AllowOverride': 'None'
+        'Order':         'allow,deny'
+        'Allow from':    'all'
+      'LimitExcept GET POST':  #ロケーション設定 ( / )
+        'Order':     'deny,allow'
+        'Deny from': 'all'
+      DirectoryIndex: 'index.html index.html.var index.htm'
+      #AccessFileName: 'AccessFileName'
+      HostnameLookups: 'Off'
+      ErrorLog: 'logs\/error_log'
+      LogLevel: 'warn'
+      LogFormat: '"%h %l %u %t \\"%r\\" %>s %b \\"%{Referer}i\\" \\"%{User-Agent}i\\" %D %{JK_WORKER_NAME}n)" prorize'
+      CustomLog: 'logs/access_log  prorize env=!nolog'
+      ServerSignature: 'Off'
+      RewriteEngine: 'on'
+      Alias: '/icons/ "/var/www/icons/"'
+      'Directory /var/www/icons':  #ディレクトリ設定 ( /var/www/icons )
+        'Options':       'MultiViews'
+        'AllowOverride': 'None'
+        'Order':         'allow,deny'
+        'Allow from':    'all'
+      LanguagePriority: 'ja en ca cs da de el eo es et fr he hr it ko ltz nl nn no pl pt pt-BR ru sv zh-CN zh-TW'
+      Alias: '/error/ "/var/www/error/"'
+      'Directory "/var/www/error"':
+        'AllowOverride':   'None'
+        'Options':         'IncludesNoExec'
+        'AddOutputFilter': 'Includes html'
+        'AddHandler':      'type-map var'
+        'Order':           'allow,deny'
+        'Allow from':      'all'
+        'LanguagePriority': 'en es de fr'
+        'ForceLanguagePriority': 'Prefer Fallback'
+      'ErrorDocument':  #エラードキュメント設定
+        - '400 /error/4xx.html'
+        - '401 /error/4xx.html'
+        - '403 /error/4xx.html'
+        - '404 /error/4xx.html'
+        - '405 /error/4xx.html'
+        - '408 /error/4xx.html'
+        - '410 /error/4xx.html'
+        - '411 /error/4xx.html'
+        - '412 /error/4xx.html'
+        - '413 /error/4xx.html'
+        - '414 /error/4xx.html'
+        - '415 /error/4xx.html'
+        - '500 /error/5xx.html'
+        - '501 /error/5xx.html'
+        - '502 /error/5xx.html'
+        - '503 /error/5xx.html'
+        - '506 /error/5xx.html'
+      'Include':
+        - 'conf.d/mod_jk.conf'
+    :COMMENT_OUT:  #コメントアウト設定値
+      #サーバ設定 (httpd.confに直接指定)
+      #ListenBackLog : ''
+      #モジュール設定 ( 直接記載 )
+      'LoadModule':
+        - 'authn_alias_module modules/mod_authn_alias.so'
+        - 'authn_dbm_module modules/mod_authn_dbm.so'
+        - 'authz_owner_module modules/mod_authz_owner.so'
+        - 'authz_groupfile_module modules/mod_authz_groupfile.so'
+        - 'authz_dbm_module modules/mod_authz_dbm.so'
+        - 'ldap_module modules/mod_ldap.so'
+        - 'authnz_ldap_module modules/mod_authnz_ldap.so'
+        - 'logio_module modules/mod_logio.so'
+        - 'env_module modules/mod_env.so'
+        - 'ext_filter_module modules/mod_ext_filter.so'
+        - 'mime_magic_module modules/mod_mime_magic.so'
+        - 'expires_module modules/mod_expires.so'
+        - 'headers_module modules/mod_headers.so'
+        - 'usertrack_module modules/mod_usertrack.so'
+        - 'dav_module modules/mod_dav.so'
+        - 'status_module modules/mod_status.so'
+        - 'autoindex_module modules/mod_autoindex.so'
+        - 'info_module modules/mod_info.so'
+        - 'dav_fs_module modules/mod_dav_fs.so'
+        - 'vhost_alias_module modules/mod_vhost_alias.so'
+        - 'actions_module modules/mod_actions.so'
+        - 'speling_module modules/mod_speling.so'
+        - 'userdir_module modules/mod_userdir.so'
+        - 'substitute_module modules/mod_substitute.so'
+        - 'proxy_module modules/mod_proxy.so'
+        - 'proxy_balancer_module modules/mod_proxy_balancer.so'
+        - 'proxy_ftp_module modules/mod_proxy_ftp.so'
+        - 'proxy_http_module modules/mod_proxy_http.so'
+        - 'proxy_ajp_module modules/mod_proxy_ajp.so'
+        - 'proxy_connect_module modules/mod_proxy_connect.so'
+        - 'cache_module modules/mod_cache.so'
+        - 'suexec_module modules/mod_suexec.so'
+        - 'disk_cache_module modules/mod_disk_cache.so'
+        - 'cgi_module modules/mod_cgi.so'
+        - 'version_module modules/mod_version.so'
+        - 'asis_module modules/mod_asis.so'
+        - 'authn_dbd_module modules/mod_authn_dbd.so'
+        - 'cern_meta_module modules/mod_cern_meta.so'
+        - 'cgid_module modules/mod_cgid.so'
+        - 'dbd_module modules/mod_dbd.so'
+        - 'dumpio_module modules/mod_dumpio.so'
+        - 'filter_module modules/mod_filter.so'
+        - 'ident_module modules/mod_ident.so'
+        - 'log_forensic_module modules/mod_log_forensic.so'
+        - 'unique_id_module modules/mod_unique_id.so'
+      'Include':
+        - 'conf.d/*.conf'
+      ServerAdmin: 'root@localhost'
+      #Files ~"^\.ht": ''
+      #IfModule mod_mime_magic.c: ''
+      #IfModule mod_dav_fs.c: ''
+      AccessFileName: '.htaccess'
+      #autoindexモジュール関連の設定
+      IndexOptions: 'FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8'
+      AddIconByEncoding: '(CMP,/icons/compressed.gif) x-compress x-gzip'
+      AddIconByType:
+        - '(TXT,/icons/text.gif) text/*'
+        - '(IMG,/icons/image2.gif) image/*'
+        - '(SND,/icons/sound2.gif) audio/*'
+        - '(VID,/icons/movie.gif) video/*'
+      AddIcon:
+        - '/icons/binary.gif .bin .exe'
+        - '/icons/binhex.gif .hqx'
+        - '/icons/tar.gif .tar'
+        - '/icons/blank.gif ^^BLANKICON^^'
+        - '/icons/blank.gif ^^BLANKICON^^'
+        - '/icons/blank.gif ^^BLANKICON^^'
+        - '/icons/layout.gif .html .shtml .htm .pdf'
+        - '/icons/blank.gif ^^BLANKICON^^'
+        - '/icons/c.gif .c'
+        - '/icons/p.gif .pl .py'
+        - '/icons/f.gif .for'
+        - '/icons/dvi.gif .dvi'
+        - '/icons/uuencoded.gif .uu'
+        - '/icons/script.gif .conf .sh .shar .csh .ksh .tcl'
+        - '/icons/tex.gif .tex'
+        - '/icons/bomb.gif core'
+        - '/icons/back.gif ..'
+        - '/icons/hand.right.gif README'
+        - '/icons/folder.gif ^^DIRECTORY^^'
+        - '/icons/blank.gif ^^BLANKICON^^'
+      DefaultIcon: '/icons/unknown.gif'
+      ReadmeName: 'README.html'
+      HeaderName: 'HEADER.html'
+      IndexIgnore: '.??* *~ *# HEADER* README* RCS CVS *,v *,t'
+      #言語設定
+      AddDefaultCharset: 'UTF-8'
+      #SorryページへのRewrite設定(Sorryサーバの場合のみの設定)
+      #RewriteCond: ''
+      #RewriteRule: ''
+
+  #試験項目  :パラメータ設定 項番2 > 設定ファイルの確認 /etc/logrotate.d/httpd
+  #環境定義書:ログローテーション基本設定
+  #ロジック番号:01
+  :logrotate:
+    - 'daily'
+    - 'ifempty'
+    - 'missingok'
+    - 'sharedscripts'
+    - 'postrotate'
+    - '/bin/kill -USR1 `/bin/cat /var/run/httpd/httpd.pid 2>/dev/null` 2> /dev/null || /bin/true'
+    - 'endscript'
+    - 'rotate 7'
+
+  #試験項目  :パラメータ設定 項番3 > staticモジュールの確認
+  #環境定義書:-
+  #ロジック番号:01
+  :static_module:
+    - 'core.c'
+    - 'prefork.c'
+    - 'http_core.c'
+    - 'mod_so.c'
+
+  #試験項目  :パラメータ設定 項番4 > DSOの確認
+  #環境定義書: 基本設定(httpd.conf)
+  #ロジック番号:01
+  :modules:
+    #<モジュール名>: <モジュールファイル名>
+    mod_actions: mod_actions.so
+    mod_alias: mod_alias.so
+    mod_asis: mod_asis.so
+    mod_auth_basic: mod_auth_basic.so
+    mod_auth_digest: mod_auth_digest.so
+    mod_authn_alias: mod_authn_alias.so
+    mod_authn_anon: mod_authn_anon.so
+    mod_authn_dbd: mod_authn_dbd.so
+    mod_authn_dbm: mod_authn_dbm.so
+    mod_authn_default: mod_authn_default.so
+    mod_authn_file: mod_authn_file.so
+    mod_authnz_ldap: mod_authnz_ldap.so
+    mod_authz_dbm: mod_authz_dbm.so
+    mod_authz_default: mod_authz_default.so
+    mod_authz_groupfile: mod_authz_groupfile.so
+    mod_authz_host: mod_authz_host.so
+    mod_authz_owner: mod_authz_owner.so
+    mod_authz_user: mod_authz_user.so
+    mod_autoindex: mod_autoindex.so
+    mod_cache: mod_cache.so
+    mod_cern_meta: mod_cern_meta.so
+    mod_cgi: mod_cgi.so
+    mod_cgid: mod_cgid.so
+    mod_dav: mod_dav.so
+    mod_dav_fs: mod_dav_fs.so
+    mod_dbd: mod_dbd.so
+    mod_deflate: mod_deflate.so
+    mod_dir: mod_dir.so
+    mod_disk_cache: mod_disk_cache.so
+    mod_dnssd: mod_dnssd.so
+    mod_dumpio: mod_dumpio.so
+    mod_env: mod_env.so
+    mod_expires: mod_expires.so
+    mod_ext_filter: mod_ext_filter.so
+    mod_filter: mod_filter.so
+    mod_headers: mod_headers.so
+    mod_ident: mod_ident.so
+    mod_include: mod_include.so
+    mod_info: mod_info.so
+    mod_ldap: mod_ldap.so
+    mod_log_config: mod_log_config.so
+    mod_log_forensic: mod_log_forensic.so
+    mod_logio: mod_logio.so
+    mod_mime: mod_mime.so
+    mod_mime_magic: mod_mime_magic.so
+    mod_negotiation: mod_negotiation.so
+    mod_proxy: mod_proxy.so
+    mod_proxy_ajp: mod_proxy_ajp.so
+    mod_proxy_balancer: mod_proxy_balancer.so
+    mod_proxy_connect: mod_proxy_connect.so
+    mod_proxy_ftp: mod_proxy_ftp.so
+    mod_proxy_http: mod_proxy_http.so
+    mod_proxy_scgi: mod_proxy_scgi.so
+    mod_reqtimeout: mod_reqtimeout.so
+    mod_rewrite: mod_rewrite.so
+    mod_setenvif: mod_setenvif.so
+    mod_speling: mod_speling.so
+    mod_status: mod_status.so
+    mod_substitute: mod_substitute.so
+    mod_suexec: mod_suexec.so
+    mod_unique_id: mod_unique_id.so
+    mod_userdir: mod_userdir.so
+    mod_usertrack: mod_usertrack.so
+    mod_version: mod_version.so
+    mod_vhost_alias: mod_vhost_alias.so
+
+#################
+# mod_jk共通パラメータ
+#試験項目  :基本動作確認項目(mod_jk)
+#環境定義書:環境定義書(mod_jk)
+mod_jk_common: &mod_jk_common
+  #試験項目  :ソフトウェアバージョン 項番1 > mod_jkのバージョンを確認
+  #環境定義書:前提事項
+  :version: 'mod_jk\/1.2.37'  #mod_jk/1.2.37 の正規表現
+
+  #構成ファイルのファイルパス一覧
+  :filepath: 
+    :'mod_jk.conf': '/etc/httpd/conf.d/mod_jk.conf'
+    :'workers.properties': '/etc/httpd/conf/workers.properties'
+    :'jkstatus': '/etc/httpd/conf/jkstatus.file'
+
+  #試験項目  :ファイル配置 項番1 > ファイル配置の確認 パーミッション・オーナー設定確認
+  #環境定義書:-
+  #ロジック番号:01
+  :conf_files:
+    :'mod_jf.conf':
+      :file: '/etc/httpd/conf.d/mod_jk.conf'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '644'
+    :'workers.properties':
+      :file: '/etc/httpd/conf/workers.properties'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '644'
+
+  #試験項目  :パラメータ設定 項番2 > 設定ファイルの確認
+  #環境定義書:基本設定(mod_jk.conf)
+  #ロジック番号:01
+  :'mod_jk.conf':
+    #Apache用設定
+    :LoadModule: 'LoadModule jk_module modules/mod_jk.so'
+    :IfModule mod_jk.c: '<IfModule mod_jk.c>'
+    #全体設定
+    :JkWorkersFile: 'JkWorkersFile conf/workers.properties'
+    :JkShmFile: 'JkShmFile logs/jk-runtime-status'
+    #転送設定 
+    :JkMount jkstatus: 'JkMount /jkstatus jkstatus'
+    :JkMount tpcw: 'JkMount \/tpcw\/\* ap01'  #JkMount /tpcw/* ap01 の正規表現
+    :JkOptions: 'JkOptions \+ForwardURIProxy'
+    :JkMountCopy: 'JkMountCopy Off'
+    #ログ設定
+    :JkLogFile: 'JkLogFile logs/mod_jk.log'
+    :JkLogLevel: 'JkLogLevel info'
+    :JkLogStampFormat: 'JkLogStampFormat "\[%a %b %d %H:%M:%S.%Q %Y\]"'  #"[%a %b %d %H:%M:%S.%Q %Y]" の正規表現
+    :Location /jkstatus: '<Location /jkstatus>'
+    #ロケーション設定 ( /jkstatus ) <Location /jkstatus> ～ </Location>内に記述 ※mod_jk監視のためのコンテンツ
+    :AuthType: 'AuthType Basic'
+    :AuthName: 'AuthName "Status worker"'
+    :AuthUserFile: 'AuthUserFile /etc/httpd/conf/jkstatus.file'
+    :Require: 'Require user jkstatus'
+    :Order: 'Order deny,allow'
+    :Deny: 'Deny from all'
+    :Allow: 'Allow from localhost'
+    #監視用スレッド設定
+    :JkWatchdogInterval: 'JkWatchdogInterval 30'
+
+  #試験項目  :パラメータ設定 項番2 > 設定ファイルの確認
+  #環境定義書:worker設定(workers.properties)
+  #ロジック番号:01
+  :'workers.properties':
+    :key_val:
+      #worker全体定義
+      'worker.list' : 'ap01,jkstatus'
+      'worker.maintain': '60'
+      #APサーバ接続用ワーカ設定　(一台目のAPに対応するworker)
+      'worker.ap01.type': 'ajp13'
+      'worker.ap01.host': 'localhost'
+      'worker.ap01.port': '8009'
+      'worker.ap01.connection_pool_minsize': '0'
+      'worker.ap01.connection_pool_timeout': '61'
+      'worker.ap01.socket_timeout': '5'
+      'worker.ap01.socket_keepalive': 'FALSE'
+      'worker.ap01.connect_timeout': '5000'
+      'worker.ap01.prepost_timeout': '5000'
+      'worker.ap01.retries': '2'
+      'worker.ap01.reply_timeout': '310000'
+      'worker.ap01.recovery_options': '3'
+      'worker.ap01.connection_ping_interval': '0'
+      'worker.ap01.ping_timeout': '10000'
+      'worker.ap01.retry_interval': '100'
+      #jkstatus用設定
+      'worker.jkstatus.type': 'status'
+      'worker.jkstatus.read_only': 'TRUE'
+    :undefined_or_comment_out:  #コメントアウト、または未定義設定値
+      common01: 'worker.ap01.lbfactor' 
+      common02: 'worker.ap01.connection_pool_size' 
+      common03: 'worker.ap01.socket_connect_timeout' 
+      common04: 'worker.ap01.ping_mode' 
+      common05: 'worker.ap01.connection_acquire_timeout' 
+      common06: 'worker.ap02.type' 
+      common07: 'worker.ap02.host' 
+      common08: 'worker.ap02.port' 
+      common09: 'worker.ap02.lbfactor' 
+      common10: 'worker.ap02.connection_pool_size' 
+      common11: 'worker.ap02.connection_pool_minsize' 
+      common12: 'worker.ap02.connection_pool_timeout' 
+      common13: 'worker.ap02.socket_timeout' 
+      common14: 'worker.ap02.socket_keepalive' 
+      common15: 'worker.ap02.connect_timeout' 
+      common16: 'worker.ap02.prepost_timeout' 
+      common17: 'worker.ap02.retries' 
+      common18: 'worker.ap02.reply_timeout' 
+      common19: 'worker.ap02.recovery_options' 
+      common20: 'worker.ap02.socket_connect_timeout' 
+      common21: 'worker.ap02.connection_ping_interval' 
+      common22: 'worker.ap02.ping_timeout' 
+      common23: 'worker.ap02.ping_mode' 
+      common24: 'worker.ap02.connection_acquire_timeout' 
+      common25: 'worker.ap02.retry_interval' 
+      common26: 'worker.wlb.type' 
+      common27: 'worker.wlb.balance_workers' 
+      common28: 'worker.wlb.sticky_session' 
+      common29: 'worker.wlb.sticky_session_force' 
+      common30: 'worker.wlb.retries' 
+      common31: 'worker.wlb.method' 
+      common32: 'worker.wlb.recover_time' 
+      common33: 'worker.wlb.error_escalation_time' 
+      common34: 'worker.wlb.retry_interval' 
+      common35: 'worker.wlb.max_reply_timeouts'
+
+  #試験項目 :パラメータ設定 項番3 > コメントアウト解除の確認
+  #環境定義書:-
+  :include_mod_jk: 'Include conf.d/mod_jk.conf'
+
+#################
+# Tomcat共通パラメータ
+#試験項目  :基本動作確認項目(Tomcat)
+#環境定義書:環境定義書(Tomcat)
+tomcat_common: &tomcat_common
+  #試験項目  :プロトコル・ポート 項目1 > TCPポート番号を確認
+  #環境定義書:-
+  #ロジック番号:01
+  :ports: 
+    port1: 
+      number: 8080
+      protocol: 'tcp'
+    port2: 
+      number: 8009
+      protocol: 'tcp'
+
+  #試験項目  :ソフトウェアバージョン 項目1 > Tomcatのバージョンの確認
+  #試験項目  :ソフトウェアバージョン 項目2 > JDKのインストールの確認
+  #試験項目  :ソフトウェアバージョン 項目3 > JDBCドライバのインストールの確認
+  #環境定義書:前提事項
+  :versions:
+    :tomcat: 'Apache Tomcat\/7.0.57'  #Apache Tomcat/7.0.57 の正規表現
+    :jdk: 'java version "1.7.0_79"'
+    :jdbc_driver: '/opt/tomcat/lib/postgresql-9.2-1004.jdbc41.jar'
+
+  #試験項目  :ファイル配置 項目1 > ファイル配置の確認・パーミッション・オーナー設定確認
+  #環境定義書:-
+  #ロジック番号:01
+  :conf_files:
+    :'init.d':
+      :file: '/etc/rc.d/init.d/tomcat'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '755'
+    :'default/tomcat':
+      :file: '/etc/default/tomcat'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '644'
+    :'server.xml':
+      :file: '/opt/tomcat/conf/server.xml'
+      :owner: 'tomcat'
+      :owner_group: 'tomcat'
+      :permission: '600'
+    :'logrotate.d/tomcat':
+      :file: '/etc/logrotate.d/tomcat'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '644'
+    :'cron.daily/tomcat':
+      :file: '/etc/cron.daily/tomcat'
+      :owner: 'root'
+      :owner_group: 'root'
+      :permission: '755'
+    :'web.xml':
+      :file: '/opt/tomcat/conf/web.xml'
+      :owner: 'tomcat'
+      :owner_group: 'tomcat'
+      :permission: '600'
+    :'ServerInfo.properties':
+      :file: '/opt/tomcat/lib/org/apache/catalina/util/ServerInfo.properties'
+      :owner: 'tomcat'
+      :owner_group: 'tomcat'
+      :permission: '644'
+    :'jdbc4':
+      :file: '/opt/tomcat/lib/postgresql-9.2-1004.jdbc41.jar'
+      :owner: 'tomcat'
+      :owner_group: 'tomcat'
+      :permission: '644'
+
+  #試験項目  :パラメータ設定 項目2 > 設定ファイルの確認
+  #環境定義書:JVM起動オプション
+  #ロジック番号:01
+  :default_tomcat:  #パラメータと設定値は"<パラメータ>=<設定値>""<パラメータ><設定値>"2種類
+    :filepath: '/etc/default/tomcat'
+    :key_eq_val:  #<パラメータ名>=<設定値>　をここに記述
+      #環境変数 (JVM指定)
+      'JAVA_HOME': '/usr/lib/jvm/java-1.7.0-openjdk.x86_64'
+      #環境変数 (JVMオプション指定)
+      'JAVA_OPTS': ''
+      #環境変数 (JVM起動オプション指定)
+      'CATALINA_OPTS': ''
+      '-XX:MaxTenuringThreshold': '15'
+      '-XX:CMSInitiatingOccupancyFraction': '80'
+      '-XX:NewSize': '600m'
+      '-XX:MaxNewSize': '600m'
+      '-XX:SurvivorRatio': '8'
+      '-XX:PermSize': '128m'
+      '-XX:MaxPermSize': '128m'
+      '-XX:HeapDumpPath': '/tmp'
+      '-Djava.security.egd': 'file:/dev/./urandom'
+      #環境変数 (ログローテーション設定)
+      'IS_GCLOG_ENABLED': 'yes'
+    :key_val:    #<パラメータ><設定値> をここに記述。パラメータのみのケースもここに記述、ただし設定値は''とする
+      #環境変数 (JVMオプション指定)
+      '-Dtomcatprocess': ''
+      #環境変数 (JVM起動オプション指定)
+      '-server': ''
+      '-XX:\+UseCMSInitiatingOccupancyOnly': ''  #-XX:+UseCMSInitiatingOccupancyOnly の正規表現
+      '-Xmx': '1500m'
+      '-Xms': '1500m'
+      '-XX:\+UseParNewGC': ''  #-XX:+UseParNewGC  の正規表現
+      '-XX:\+UseConcMarkSweepGC': ''  #-XX:+UseConcMarkSweepGC の正規表現
+      '-XX:\+PrintGCDetails': ''  #-XX:+PrintGCDetails の正規表現
+      '-XX:\+PrintGCDateStamps': ''  #-XX:+PrintGCDateStamps の正規表現
+      '-Xloggc:': '\/opt\/tomcat\/logs\/gc\.fifo'  #"/opt/tomcat/logs/gc.fifo" の正規表現
+      '-XX:\+PrintClassHistogram': ''  #-XX:+PrintClassHistogram の正規表現
+      '-XX:\+CMSClassUnloadingEnabled': ''  #-XX:+CMSClassUnloadingEnabled の正規表現
+      '-XX:\+HeapDumpOnOutOfMemoryError': ''  #-XX:+HeapDumpOnOutOfMemoryError の正規表現
+
+  #試験項目  :パラメータ設定 項目2 > 設定ファイルの確認
+  #環境定義書:基本設定(server.xml)
+  #ロジック番号:02と03
+  :server_xml:  #server.xmlのパラメータを記述する、
+    :filepath: '/opt/tomcat/conf/server.xml'
+    :key_val:  #xml階層で記述
+      'Server':
+        'port':     '8115'
+        'shutdown': 'pr0rizeLinux'
+      'Listener':
+        'className': 'org.apache.catalina.core.JreMemoryLeakPreventionListener'
+      'GlobalNamingResources': ''
+      'Service':
+        'name': 'Catalina'
+      'Connector':
+        'port':              '8009'
+        'maxThreads':        '302'
+        'minSpareThreads':   '150'
+        #'maxParameterCount'
+        'connectionTimeout': '-1'
+        'keepAliveTimeout':  '-1'
+        'enableLookups':     'false'
+        #'scheme'
+        'secure':            'true'
+        #'proxyPort'
+        'protocol':          'AJP/1.3'
+      'Engine':
+        'name':     'Catalina'
+        'jvmRoute': 'ap01'
+      #'Cluster'
+      'Host':
+        'name':       'localhost'
+        'appBase':    'webapps'
+        'autoDeploy': 'false'
+        'unpackWARs': 'false'
+      'Valve':
+        'className': 'org.apache.catalina.valves.AccessLogValve'
+        'directory': 'logs'
+        'prefix':    'localhost_access_log.'
+        'suffix':    '.txt'
+        'pattern':   '%h %l %u %t %r %s %b %D'
+
+  #試験項目  :パラメータ設定 項目2 > 設定ファイルの確認
+  #環境定義書:ログローテーション設定(catalina.out)
+  #ロジック番号:01
+  :logrotate_d_tomcat:    #ログローテーション設定(catalina.out)
+    :filepath: '/etc/logrotate.d/tomcat'
+    :strings:
+      common1:  '/opt/tomcat/logs/catalina.out'
+      common2:  '/opt/tomcat/logs/gc.log'
+      #/bin/cat /var/run/catalina_out.pid | /usr/bin/xargs /bin/kill -STOP || true の正規表現
+      common3:  '\/bin\/cat \/var\/run\/catalina_out\.pid \| \/usr\/bin\/xargs \/bin\/kill -STOP \|\| true'
+      #/bin/cat /var/run/gc_log.pid | /usr/bin/xargs /bin/kill -STOP || true　の正規表現
+      common4:  '\/bin\/cat \/var\/run\/gc_log\.pid \| \/usr\/bin\/xargs \/bin\/kill -STOP \|\| true'
+      common5:  'copytruncate'
+      common6:  'ifempty'
+      common7:  'sharedscripts'
+      common8:  'rotate 7'
+      #/bin/cat /var/run/catalina_out.pid | /usr/bin/xargs /bin/kill -CONT || true の正規表現
+      common9:  '\/bin\/cat \/var\/run\/catalina_out.pid \| \/usr\/bin\/xargs \/bin\/kill -CONT \|\| true'
+      #/bin/cat /var/run/gc_log.pid | /usr/bin/xargs /bin/kill -CONT || true の正規表現
+      common10: '\/bin\/cat \/var\/run\/gc_log.pid \| \/usr\/bin\/xargs \/bin\/kill -CONT \|\| true'
+
+  #試験項目  :不要機能排除 項目1 > 不必要なサンプルアプリケーションの削除の確認
+  #環境定義書:-
+  #ロジック番号:01
+  :deleted_sample_apps:
+    app1: 'ROOT'
+    app2: 'docs'
+    app3: 'examples'
+    app4: 'host-manager'
+    app5: 'manager'
+
+  #試験項目  :パラメータ設定 項目2 > 設定ファイルの確認
+  #環境定義書:バージョン表示設定
+  #ロジック番号:01
+  :ServerInfo_properties:
+    :key_val:
+      'server.info': 'Apache Tomcat'
+
+  #試験項目  :パラメータ設定 項目2 > 設定ファイルの確認
+  #環境定義書:エラーページ設定(web.xml)
+  #ロジック番号:01
+  :web_xml:
+    :multiline_strings:
+      #<error-page>改行<error-code>404</error-code>改行<location>/404.html</location>改行</error-page>　の正規表現
+      common1: '<error-page>\s*.\s*<error-code>404<\/error-code>\s*.\s*<location>\/404\.html<\/location>\s*.\s*<\/error-page>'
+      #<error-page>改行<error-code>500</error-code>改行<location>/500.html</location>改行</error-page>　の正規表現
+      common2: '<error-page>\s*.\s*<error-code>500<\/error-code>\s*.\s*<location>\/500\.html<\/location>\s*.\s*<\/error-page>'
+
+#####################
+# postgreSQL共通パラメータ
+#試験項目  :基本動作確認項目(PostgreSQL)
+#環境定義書:環境定義書(PostgreSQL)
+postgresql_common: &postgresql_common
+  #試験項目  :ログイン 項番1 > DBサーバーへの接続
+  #環境定義書:-
+  :user: 'postgres'
+
+  #試験項目  :パラメータ設定 項番3 > GUCパラメータの確認
+  #環境定義書:基本設定(postgresql.conf)
+  #ロジック番号:01
+  :postgresql_conf:
+    :psql_key_val:  #psqlコマンドで確認するパラメータ
+      #<パラメータ名>: <設定値>
+      listen_addresses: '\*'  #*　の正規表現
+      max_connections: '300'
+      superuser_reserved_connections: '10'
+      tcp_keepalives_idle: '60'
+      tcp_keepalives_interval: '5'
+      tcp_keepalives_count: '5'
+      shared_buffers: '1GB'
+      work_mem: '1MB'
+      maintenance_work_mem: '64MB'
+      bgwriter_lru_maxpages: '100'
+      bgwriter_lru_multiplier: '2'
+      wal_level: 'hot_standby'
+      fsync: 'on'
+      synchronous_commit: 'on'
+      wal_sync_method: 'fdatasync'
+      full_page_writes: 'on'
+      checkpoint_segments: '300'
+      checkpoint_timeout: '15min'
+      checkpoint_completion_target: '0.7'
+      archive_mode: 'on'
+      archive_command: '/usr/local/bin/direct_cp %p /database/pgarch/archives/%f'
+      max_wal_senders: '4'
+      wal_keep_segments: '32'
+      replication_timeout: '20s'
+      synchronous_standby_names: ''
+      hot_standby: 'on'
+      max_standby_archive_delay: '-1'
+      max_standby_streaming_delay: '-1'
+      wal_receiver_status_interval: '5s'
+      hot_standby_feedback: 'on'
+      random_page_cost: '2'
+      effective_cache_size: '2GB'
+      default_statistics_target: '10'
+      log_destination: 'csvlog'
+      logging_collector: 'on'
+      log_directory: '/var/log/pgsql'
+      log_filename: 'postgresql-%Y-%m-%d_%H%M%S.log'
+      log_rotation_age: '1d'
+      log_rotation_size: '0'
+      log_truncate_on_rotation: 'on'
+      log_min_duration_statement: '20s'
+      log_checkpoints: 'on'
+      log_error_verbosity: 'verbose'
+      log_connections: 'on'
+      log_line_prefix: ''
+      log_lock_waits: 'on'
+      track_activities: 'on'
+      track_counts: 'on'
+      track_functions: 'all'
+      autovacuum: 'on'
+      log_autovacuum_min_duration: '1min'
+      autovacuum_max_workers: '4'
+      autovacuum_freeze_max_age: '2000000000'
+      autovacuum_vacuum_cost_delay: '20ms'
+      autovacuum_vacuum_cost_limit: '400'
+      deadlock_timeout: '1s'
+      restart_after_crash: 'off'
+      shared_preload_libraries: 'pg_statsinfo, pg_stat_statements'
+      pg_statsinfo.textlog_line_prefix: '%t %p %c-%l %x %q\(%u, %d, %r, %a\) '  #''%t %p %c-%l %x %q(%u, %d, %r, %a) ' の正規表現
+      pg_statsinfo.snapshot_interval: '10min'
+      pg_statsinfo.repository_server: 'user=statsinfo dbname=stats'
+      pg_statsinfo.maintenance_time: '00:02:00'
+      pg_statsinfo.repository_keepday: '7'
+    :file_key_val:  #ファイルで確認するパラメータ
+      #<パラメータ名>: <設定値>
+      wal_buffers: '-1'
+      pg_statsinfo.enable_maintenance: 'on'
+
+  #試験項目  :パラメータ設定 項番5 > postgresユーザ環境変数の確認
+  #環境定義書:ユーザ設定
+  #ロジック番号:01
+  #envコマンド結果
+  :env:
+    :key_val:
+      PGDATA: '/database/pgdata/data'
+      PATH:   '/usr/pgsql-9.2/bin:.*'
+  #.bashrcシンボリックリンク
+  :pgsql_bashrc:
+    :path:      '/var/lib/pgsql/.bashrc'
+    :linked_to: '/var/lib/pgsql/.bash_profile'
+
+  #試験項目  :パラメータ設定 項番7 > ログの確認
+  #環境定義書:不要ログ削除設定
+  #ロジック番号:01
+  :log_files:
+    :path: '/var/log/pgsql'
+    :file_name_patterns:
+      pattern1: 'postgresql-[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{6}.log'  #postgresql-<4桁数字>-<2桁数字>_<6桁数字>.log　の正規表現
+      pattern2: 'postgresql-[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{6}.csv'  #postgresql-<4桁数字>-<2桁数字>_<6桁数字>.csv　の正規表現
+      pattern3: 'postgresql.log'
+
+  #試験項目  :パラメータ設定 項番8 > 起動スクリプトの確認
+  #試験項目  :パラメータ設定 項番9 > pg_stats_reporter設定確認
+  #環境定義書:-
+  #ロジック番号:02と03
+  #試験項目のchkconfig部分
+  :services:
+    'postgresql-9.2': 'off'
+    'httpd': '235'
+
+  #試験項目  :機能単体 項番12 > データベース一覧の取得の確認
+  #環境定義書:-
+  #ロジック番号:01
+  :db_list:
+    entry1: 'postgres\s+\|\s+postgres\s+\|\s+UTF8'  #postgres   | postgres  | UTF8 の正規表現
+    entry2: 'stats\s+\|\s+statsinfo\s+\|\s+UTF8'    #stats      | statsinfo | UTF8 の正規表現
+    entry3: 'template0\s+\|\s+postgres\s+\|\s+UTF8' #template0  | postgres  | UTF8 の正規表現
+    entry4: 'template1\s+\|\s+postgres\s+\|\s+UTF8' #template1  | postgres  | UTF8 の正規表現
+
+  #試験項目  :プロセス 項番1 > PostgreSQLの起動プロセスを確認
+  #環境定義書:-
+  #ロジック番号:01
+  :running_processes:
+    process1: '/usr/pgsql-9.2/bin/postgres'
+    process2: 'postgres: pg_statsinfo launcher process'
+    process3: 'postgres: logger process'
+    process4: 'postgres: checkpointer process'
+    process5: 'postgres: writer process'
+    process6: 'postgres: stats collector process'
+    process7: '/usr/pgsql-9.2/bin/pg_statsinfod.*'
+    process8: 'postgres: wal writer process'
+    process9: 'postgres: autovacuum launcher process'
+    process10: 'postgres: archiver process'
+    process11: 'postgres: postgres postgres \[local\] idle'
+
+  #試験項目  :ソフトウェアバージョン 項番1 > PostgreSQLのバージョンを確認
+  #環境定義書:-
+  :select_version: 'PostgreSQL 9.2.4 on x86_64-unknown-linux-gnu, compiled by gcc \(GCC\).*64-bit'
+
+  #試験項目  :パラメータ設定 項番4 > 設定ファイルの確認
+  #環境定義書:クライアントアクセス設定(pg_hba.conf)
+  #ロジック番号:01
+  :pg_hba:
+    :path: '/database/pgdata/data/pg_hba.conf'
+    :entries:
+      entry1:  #ローカルアクセス設定 (UNIXドメインソケット) 
+        'TYPE':         'local'
+        'DATABASE':     'all'
+        'USER':         'all'
+        'CIDR ADDRESS': ''
+        'METHOD':       'trust'
+      entry2:  #ループバックアドレス経由の接続
+        'TYPE':         'host'
+        'DATABASE':     'all'
+        'USER':         'all'
+        'CIDR ADDRESS': '127\.0\.0\.1\/32'  #127.0.0.1/32 の正規表現
+        'METHOD':       'trust'
+      entry3:  #業務セグメント（bussines）からの接続
+        'TYPE':         'host'
+        'DATABASE':     'provmwposdb001'
+        'USER':         'tpcw'
+        'CIDR ADDRESS': '172\.16\.5\.0\/24' #172.16.5.0/24 の正規表現,businessセグメントを記載
+        'METHOD':       'md5'
+      entry4:  #業務セグメント（bussines）からの接続
+        'TYPE':         'host'
+        'DATABASE':     'stats'
+        'USER':         'statsinfo'
+        'CIDR ADDRESS': '172\.16\.5\.0\/24' #172.16.5.0/24 の正規表現,businessセグメントを記載
+        'METHOD':       'md5'
+      entry5:  #ハートビート通信用セグメント（HB）からの接続
+        'TYPE':         'host'
+        'DATABASE':     'replication'
+        'USER':         'repuser'
+        'CIDR ADDRESS': '172\.16\.9\.170\/32' #172.16.9.170/32 の正規表現,liaavmdb001のHBセグメントのIPアドレスを記載
+        'METHOD':       'md5'
+      entry6:  #ハートビート通信用セグメント（HB）からの接続
+        'TYPE':         'host'
+        'DATABASE':     'replication'
+        'USER':         'repuser'
+        'CIDR ADDRESS': '172\.16\.9\.171\/32' #172.16.9.171/32 の正規表現,liaavmdb002のHBセグメントのIPアドレスを記載
+        'METHOD':       'md5'
+    :comment_out_entries:  #コメントアウト、または未定義設定値
+      entry1:  #ループバックアドレス経由の接続
+        'TYPE':         'host'
+        'DATABASE':     'all'
+        'USER':         'all'
+        'CIDR ADDRESS': '::1\/128'  #::1/128 の正規表現
+        'METHOD':       'trust'
+
+  #試験項目  :パラメータ設定 項番9 > pg_stats_reporter設定確認
+  #環境定義書:pg_stats_reporter設定
+  #ロジック番号:01
+  :pg_stats_reporter:
+    :key_val:
+      host: '192.168.36.209' #<liaavmdb000のbussinessセグメントのVIPアドレス>
+      port: '5432'
+      dbname: 'stats'
+      username: 'statsinfo'
+      password: 'p@ssw0rd'
+    :strings:
+      common1: '\[provmwposdb001\]'  #[provmwposdb001] の正規表現
+
+  #試験項目  :ファイル配置 項番1 > ファイル配置の確認(パーミッション・オーナー設定確認)
+  #環境定義書:-
+  #ロジック番号:01
+  :conf_files: &postgresql_conf_files
+    'pg_hba.conf':
+      'filepath':    '/database/pgdata/data/pg_hba.conf'
+      'owner':       'postgres'
+      'owner_group': 'postgres'
+      'permission':  '644'
+    'postgresql.conf':
+      'filepath':    '/database/pgdata/data/postgresql.conf'
+      'owner':       'postgres'
+      'owner_group': 'postgres'
+      'permission':  '644'
+    'postgresql':
+      'filepath':    '/etc/cron.daily/postgresql'
+      'owner':       'root'
+      'owner_group': 'root'
+      'permission':  '755'
+    '/pg_stats_reporter.ini':
+      'filepath':    '/var/www/pg_stats_reporter/pg_stats_reporter.ini'
+      'owner':       'root'
+      'owner_group': 'root'
+      'permission':  '644'
+    '.pgpass':
+      'filepath':    '/var/lib/pgsql/.pgpass'
+      'owner':       'postgres'
+      'owner_group': 'postgres'
+      'permission':  '600'
+
+###############
+# Role common #
+###############n
+
+# WEB APサーバ共通パラメータ
+wa_common: &wa_common
+  :roles:  #WEB APサーバを構成するプロダクトを記述
+    - rhel
+    - apache
+    - mod_jk
+    - tomcat
+  #試験項目  :基本動作確認項目(RHEL)
+  #環境定義書:環境定義書(RHEL)
+  :rhel:  #rhel共通パラメータをインポートし、差分を記述
+    <<: *rhel_common
+    #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+    #環境定義書:ユーザ
+    :users:
+      <<: *users
+      tomcat:
+        uid: '1001'
+        gname: 'tomcat'
+        home_dir: '/opt/tomcat'
+        login_shell: '/sbin/nologin'
+
+    #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+    #環境定義書:グループ
+    :groups:
+      <<: *groups
+      tomcat:
+        gid: '1001'
+        members:
+          - 'tomcat'
+
+    #試験項目  :パラメータ設定 項番20 > カーネルパラメータの確認
+    #環境定義書:カーネルパラメータ
+    :sysctl:
+      <<: *sysctl
+      net.core.somaxconn: 511
+      net.ipv4.tcp_keepalive_time: 60
+      net.ipv4.tcp_keepalive_intvl: 5
+      net.ipv4.tcp_keepalive_probes: 5
+      net.ipv4.conf.eth1.arp_announce: 2
+      net.ipv4.conf.eth1.arp_ignore: 1
+      net.ipv4.conf.eth2.arp_announce: 2
+      net.ipv4.conf.eth2.arp_ignore: 1
+
+    #試験項目  :パラメータ設定 項番35 > cronジョブの確認
+    #環境定義書:cronジョブ
+    :cron_jobs:
+      <<: *cron_jobs
+      certwatch: '/etc/cron.daily/'
+      tomcat: '/etc/cron.daily/'
+
+    #試験項目  :プロセス 項番2 > 起動サービスの対象・ランレベルの確認
+    #環境定義書:起動サービス
+    :services:
+      <<: *services
+      'httpd': '235'
+      'tomcat': '235'
+
+    #試験項目  :パラメータ設定 項番24 > ユーザリミットの確認
+    #環境定義書:ユーザリミット
+    :limits:
+      <<: *limits
+      web_common1: 'tomcat\s+soft\s+nofile\s+65536'
+      web_common2: 'tomcat\s+hard\s+nofile\s+65536'
+      web_common3: 'tomcat\s+soft\s+nproc\s+8192'
+      web_common4: 'tomcat\s+hard\s+nproc\s+8192'
+
+  #試験項目  :基本動作確認項目(Apache)
+  #環境定義書:環境定義書(Apache)
+  :apache:  #apache共通パラメータをインポートし、差分を記述
+    <<: *apache_common
+
+  #試験項目  :基本動作確認項目(mod_jk)
+  #環境定義書:環境定義書(mod_jk)
+  :mod_jk:  #mod_jk共通パラメータをインポートし、差分を記述
+    <<: *mod_jk_common
+
+  #試験項目  :基本動作確認項目(Tomcat)
+  #環境定義書:環境定義書(Tomcat)
+  :tomcat:  #tomcat共通パラメータをインポートし、差分を記述
+    <<: *tomcat_common
+
+# DBサーバ共通パラメータ
+db_common: &db_common
+  :roles:  #DBサーバを構成するプロダクトを記述
+    - rhel
+    - postgresql
+  #試験項目  :基本動作確認項目(RHEL)
+  #環境定義書:環境定義書(RHEL)
+  :rhel:  #rhel共通パラメータをインポートし、差分を記述
+    <<: *rhel_common
+    #試験項目  :ソフトウェアバージョン 項番3 > パッケージのバージョンの確認
+    #環境定義書:追加パッケージ
+    :additional_package_rpm:
+      <<: *additional_package_rpm
+      postgresql92: '9.2.4-1PGDG.rhel6.x86_64'
+      postgresql92-contrib: '9.2.4-1PGDG.rhel6.x86_64'
+      postgresql92-docs: '9.2.4-1PGDG.rhel6.x86_64'
+      postgresql92-libs: '9.2.4-1PGDG.rhel6.x86_64'
+      postgresql92-server: '9.2.4-1PGDG.rhel6.x86_64'
+      postgresql92-debuginfo: '9.2.4-1PGDG.rhel6.x86_64'
+      iSMccs: ''
+      glibc: '2.12-1.149.el6_6.5.i686'
+      nss-softokn-freebl: '3.12.9-11.el6.i686'
+      libgcc: '4.4.7-3.el6.i686'
+      libstdc++: '4.4.7-3.el6.i686'
+      compat-libstdc++: '33-3.2.3-69.el6.i686'
+      libuuid: '2.17.2-12.9.el6.i686'
+      cluster-glue-libs: '1.0.11-1.el6.x86_64'
+      heartbeat-libs: '3.0.5-1.1.el6.x86_64'
+      resource-agents: '3.9.5-1.310.0d443.el6.x86_64'
+      corosync: '1.4.6-1.el6.x86_64'
+      corosynclib: '1.4.6-1.el6.x86_64'
+      pacemaker-libs: '1.0.13-2.el6.x86_64'
+      openhpi-libs: '2.14.1-3.el6.x86_64'
+      PyXML: '0.8.4-19.el6.x86_64'
+      OpenIPMI-libs: '2.0.16-14.el6.x86_64'
+      cluster-glue: '1.0.11-1.el6.x86_64'
+      heartbeat: '3.0.5-1.1.el6.x86_64'
+      libesmtp: '1.0.4-16.el6.x86_64'
+      pacemaker: '1.0.13-2.el6.x86_64'
+      pm_diskd: '1.3-1.el6.x86_64'
+      pm_logconv-hb: '1.3-1.el6.noarch'
+      pm_extras: '1.5-1.el6.x86_64'
+      pm_crmgen: '1.4-1.el6.noarch'
+      ipmitool: '1.8.11-13.el6.1.x86_64'
+
+    #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+    #環境定義書:ユーザ
+    :users:
+      <<: *users
+      postgres:
+        uid: '26'
+        gname: 'postgres'
+        home_dir: '/var/lib/pgsql'
+        login_shell: '/bin/bash'
+
+    #試験項目  :パラメータ設定 項番16 > グループ/ユーザの確認
+    #環境定義書:グループ
+    :groups:
+      <<: *groups
+      postgres:
+        gid: '26'
+        members:
+          - 'postgres'
+
+    #試験項目  :パラメータ設定 項番19 > kdumpマウント設定の確認
+    #環境定義書:ファイルシステムタブ
+    :fstab:
+      <<: *fstab
+      common2: '\/dev\/sdb1\s+\/database/pgdata\s+ext4\s+defaults\s+0\s+0' #/dev/sdb1 /database/pgdata ext4 defaults 0 0　の正規表現
+      common3: '\/dev\/sdc1\s+\/database/pgxlog\s+ext4\s+defaults\s+0\s+0' #/dev/sdc1 /database/pgxlog ext4 defaults 0 0　の正規表現
+      common4: '\/dev\/sdd1\s+\/database/pgarch\s+ext4\s+defaults\s+0\s+0' #/dev/sdd1 /database/pgarch ext4 defaults 0 0　の正規表現
+
+    #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+    #環境定義書:ディスク情報
+    #下記はDBサーバ共通のディスク情報、ホストによって異なる情報はホストを定義する箇所で記述
+    :disks: &db_common_disks
+      <<: *disks
+      '/dev/mapper/vg00-lv_dump':
+        <<: *disks_dump
+        SIZE:       8604
+      '/dev/sdb1': &db_common_disks_sdb1
+        SIZE:       20480
+        FSTYPE:     'ext4'
+        MOUNTPOINT: ''
+      '/dev/sdc1': &db_common_disks_sdc1
+        SIZE:       20480
+        FSTYPE:     'ext4'
+        MOUNTPOINT: ''
+      '/dev/sdd1': &db_common_disks_sdd1
+        SIZE:       20480
+        FSTYPE:     'ext4'
+        MOUNTPOINT: ''
+
+    #試験項目  :パラメータ設定 項番20 > カーネルパラメータの確認
+    #環境定義書:カーネルパラメータ
+    :sysctl:
+      <<: *sysctl
+      net.ipv4.conf.eth1.arp_announce: 2
+      net.ipv4.conf.eth1.arp_ignore: 1
+      net.ipv4.conf.eth2.arp_announce: 2
+      net.ipv4.conf.eth2.arp_ignore: 1
+      net.core.rmem_default: 262144
+      net.core.wmem_default: 262144
+      net.core.wmem_max: 262144
+      vm.dirty_ratio: 20
+      vm.dirty_background_ratio: 10
+
+    #試験項目  :パラメータ設定 項番35 > cronジョブの確認
+    #環境定義書:cronジョブ
+    :cron_jobs_not:
+      <<: *cron_jobs_not
+      certwatch: '/etc/cron.daily/'
+      tomcat: '/etc/cron.daily/'
+
+    #試験項目  :プロセス 項番2 > 起動サービスの対象・ランレベルの確認
+    #環境定義書:起動サービス
+    :services:
+      <<: *services
+      'httpd': 'off'
+      'heartbeat': 'off'
+      'multipathd': '2345'
+      'postgresql-9.2': 'off'
+      'iSMHostRegisterService': '2345'
+
+    #試験項目  :パラメータ設定 項番36 > Net-SNMP設定の確認
+    #環境定義書:Net-SNMP(1)
+    :snmpd_conf:
+      :comment_out:
+        <<: *snmpd_conf_comment_out
+      :values:
+        <<: *snmpd_conf_values
+        db_common1: 'disk\s+\/database\/pgarch'  #disk /database/pgarch の正規表現
+        db_common2: 'disk\s+\/database\/pgdata'  #disk /database/pgdata の正規表現
+        db_common3: 'disk\s+\/database\/pgxlog'  #disk /database/pgxlog の正規表現
+
+    #試験項目  :パラメータ設定 項番24 > ユーザリミットの確認
+    #環境定義書:ユーザリミット
+    :limits:
+      <<: *limits
+      db_common1: 'postgres\s+soft\s+nofile\s+65536'  #postgres soft nofile 65536 の正規表現
+      db_common2: 'postgres\s+hard\s+nofile\s+65536'  #postgres hard nofile 65536 の正規表現
+
+    #試験項目  :パラメータ設定 項番27 > rsyslogの確認
+    #環境定義書:rsyslog
+    :rsyslog:
+      :comment_out:
+        <<: *rsyslog_comment_out
+      :key_val:
+        <<: *rsyslog_key_val
+      :strings:
+        <<: *rsyslog_strings
+        #*.info;mail.none;authpriv.none;cron.none;local1.none /var/log/messages の正規表現
+        common2: '\*\.info;mail\.none;authpriv\.none;cron\.none;local1\.none\s+\/var\/log\/messages'
+        #/var/log/heartbeat/ha-log;RSYSLOG_TraditionalFileFormat の正規表現
+        common3: 'local1.info\s+\/var\/log\/heartbeat\/ha-log;RSYSLOG_TraditionalFileFormat'
+
+    #試験項目  :確認漏れの環境定義書シート
+    #環境定義書:遠隔ログイン設定
+    :pam_d_sshd:
+      <<: *pam_d_sshd
+      #account required pam_access.so accessfile=/etc/security/access_sshd.conf の正規表現
+      common1: 'account\s+required\s+pam_access\.so\s+accessfile=\/etc\/security\/access_sshd\.conf'
+    :access_sshd_conf:
+      common1: '\+\s*:\s*ALL\s*:\s*127\.0\.0\.1'  #+ :ALL :127.0.0.1 の正規表現
+      #設定値を入れ替えて行先頭の#を削除
+      #common2: '\+ :root :<liaavmdb001のIPアドレス(sms)> <liaavmdb002のIPアドレス(sms)> <liaavmdb001のIPアドレス(HB)> <liaavmdb002のIPアドレス(HB)>'
+      common3: '\+\s*:\s*sudoope\s+ope\s*:\s*ALL'  #+ :sudoope ope :ALL の正規表現
+      common4: '\-\s*:\s*ALL\s*:\s*ALL'  #- :ALL :ALL の正規表現
+
+  #試験項目  :基本動作確認項目(PostgreSQL)
+  #環境定義書:環境定義書(PostgreSQL)
+  :postgresql:  #postgresql共通パラメータをインポートし、差分を記述
+    <<: *postgresql_common
+
+
+####################
+# Hosts dependends #
+# 実際にテストするホストを記述する
+####################
+
+#[サーバ名|サーバIP]:
+#  <<: *[wa_common|db_common]  #サーバロール
+#  :node:  #ホスト依存の設定値を記述
+
+#'liaavmwa001':
+#  <<: *wa_common
+#  #試験項目  :基本動作確認項目(RHEL)
+#  #環境定義書:環境定義書(RHEL)
+#  :node:
+#    #試験項目  :パラメータ設定 項番14 > ネットワークインターフェース設定の確認
+#    #環境定義書:ネットワークインタフェース
+#    #ロジック番号:02と03
+#    :interfaces:
+#      eth0:
+#        <<: *interfaces_eth_common
+#        DEVICE:    'eth0'
+#        IPADDR:    '192.168.36.112'
+#        NETWORK:   '192.168.36.0'
+#        BROADCAST: '192.168.36.255'
+#
+#    #試験項目  :パラメータ設定 項番13 > ホスト名の確認
+#    #環境定義書:ホスト名
+#    #ロジック番号:01
+#    :sysconfig_network:
+#      <<: *sysconfig_network
+#      HOSTNAME: 'liaavmwa001'
+#
+#    #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+#    #環境定義書:ディスク情報
+#    #ロジック番号:02
+#    :disks:
+#      <<: *disks
+#
+#    #試験項目  :確認漏れの環境定義書シート
+#    #環境定義書:遠隔ログイン設定  
+#    :sshd_config:
+#      :key_val:
+#        <<: *sshd_config_key_val
+#      #:strings:
+#      #  node1: 'ListenAddress 各サーバの運用管理セグメントのIPアドレス'
+
+'scms-app1':
+  <<: *wa_common
+  #試験項目  :基本動作確認項目(RHEL)
+  #環境定義書:環境定義書(RHEL)
+  :node:
+    #試験項目  :パラメータ設定 項番14 > ネットワークインターフェース設定の確認
+    #環境定義書:ネットワークインタフェース
+    #ロジック番号:02と03
+    :interfaces:
+      eth0:
+        <<: *interfaces_eth_common
+        DEVICE:    'eth0'
+        IPADDR:    '10.0.1.10'
+        NETWORK:   '10.0.1.0'
+        BROADCAST: '10.0.1.255'
+
+    #試験項目  :パラメータ設定 項番13 > ホスト名の確認
+    #環境定義書:ホスト名
+    #ロジック番号:01
+    :sysconfig_network:
+      <<: *sysconfig_network
+      HOSTNAME: 'scms-app1'
+
+    #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+    #環境定義書:ディスク情報
+    #ロジック番号:02
+    :disks:
+      <<: *disks
+
+    #試験項目  :確認漏れの環境定義書シート
+    #環境定義書:遠隔ログイン設定  
+    :sshd_config:
+      :key_val:
+        <<: *sshd_config_key_val
+      #:strings:
+      #  node1: 'ListenAddress 各サーバの運用管理セグメントのIPアドレス'
+
+'scms-app2':
+  <<: *wa_common
+  #試験項目  :基本動作確認項目(RHEL)
+  #環境定義書:環境定義書(RHEL)
+  :node:
+    #試験項目  :パラメータ設定 項番14 > ネットワークインターフェース設定の確認
+    #環境定義書:ネットワークインタフェース
+    #ロジック番号:02と03
+    :interfaces:
+      eth0:
+        <<: *interfaces_eth_common
+        DEVICE:    'eth0'
+        IPADDR:    '10.0.1.11'
+        NETWORK:   '10.0.1.0'
+        BROADCAST: '10.0.1.255'
+
+    #試験項目  :パラメータ設定 項番13 > ホスト名の確認
+    #環境定義書:ホスト名
+    #ロジック番号:01
+    :sysconfig_network:
+      <<: *sysconfig_network
+      HOSTNAME: 'scms-app2'
+
+    #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+    #環境定義書:ディスク情報
+    #ロジック番号:02
+    :disks:
+      <<: *disks
+
+    #試験項目  :確認漏れの環境定義書シート
+    #環境定義書:遠隔ログイン設定  
+    :sshd_config:
+      :key_val:
+        <<: *sshd_config_key_val
+      #:strings:
+      #  node1: 'ListenAddress 各サーバの運用管理セグメントのIPアドレス'
+
+
+#'liaavmdb001':
+#  <<: *db_common
+#  #試験項目  :基本動作確認項目(RHEL)
+#  #環境定義書:環境定義書(RHEL)
+#  :node:
+#    #試験項目  :パラメータ設定 項番14 > ネットワークインターフェース設定の確認
+#    #環境定義書:ネットワークインタフェース
+#    #ロジック番号:02と03
+#    :interfaces:
+#      eth0:
+#        <<: *interfaces_eth_common
+#        DEVICE:    'eth0'
+#        IPADDR:    '192.168.36.209'
+#        NETWORK:   '192.168.36.0'
+#        BROADCAST: '192.168.36.255'
+#
+#    #試験項目  :パラメータ設定 項番13 > ホスト名の確認
+#    #環境定義書:ホスト名
+#    #ロジック番号:01
+#    :sysconfig_network:
+#      <<: *sysconfig_network
+#      HOSTNAME: 'liaavmdb001'
+#
+#    #試験項目  :パラメータ設定 項番21 ディスク情報（パーティション）の確認
+#    #環境定義書:ディスク情報
+#    #ロジック番号:02
+#    :disks:
+#      <<: *db_common_disks
+#      '/dev/sdb1':
+#        <<: *db_common_disks_sdb1
+#        MOUNTPOINT: '/database/pgdata'
+#      '/dev/sdc1':
+#        <<: *db_common_disks_sdc1
+#        MOUNTPOINT: '/database/pgxlog'
+#      '/dev/sdd1':
+#        <<: *db_common_disks_sdd1
+#        MOUNTPOINT: '/database/pgarch'
+#
+#    #試験項目  :パラメータ設定 項番37 > ストレージマウントポイントの確認
+#    #環境定義書:ストレージマウントポイント
+#    #ロジック番号:01と04
+#    :storage_mount_point:         #ストレージマウントポイント
+#      '/database/pgdata':           #マウントポイントの値
+#        'owner': 'postgres'           #所有者
+#        'owner_group': 'postgres'     #所有者グループ
+#        'partition': '/dev/sdb1'      #パーティション名
+#        'Maximum mount count': '-1'   #Maximum mount countの値
+#        'Check interval': '0'         #Check intervalの値
+#      '/database/pgxlog':
+#        'owner': 'postgres'
+#        'owner_group': 'postgres'
+#        'partition': '/dev/sdc1'
+#        'Maximum mount count': '-1'
+#        'Check interval': '0'
+#      '/database/pgarch':
+#        'owner': 'postgres'
+#        'owner_group': 'postgres'
+#        'partition': '/dev/sdd1'
+#        'Maximum mount count': '-1'
+#        'Check interval': '0'
+#
+#    #試験項目  :確認漏れの環境定義書シート
+#    #環境定義書:遠隔ログイン設定
+#    :sshd_config:
+#      :key_val:
+#        <<: *sshd_config_key_val
+#      #:strings:
+#      #  node1: 'ListenAddress 各サーバの運用管理セグメントのIPアドレス'

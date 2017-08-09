@@ -1,0 +1,124 @@
+☆READMEについて
+本資料ではserverspec資材に関する下記の説明を行っております。
+  ・ノードの追加方法
+  ・個別実装の説明  
+ご一読の上ご利用ください。。
+
+■ノードの追加方法
+本資材で定義している役割（Web/APおよびDB）に対してノードを追加する場合の手順を説明します。
+
+  ・Web/AP
+    1. 定義ファイルの追加: spec/hosts/liaavmwa001_spec.jsonを複製し、ファイル名を"<ノード名>_spec.json"または"<ノードのIP>_spec.json"に変更
+    
+    2. 定義ファイルの編集:
+      'liaavmwa001'を'<ノード名>'または'<ノードのIP>'に変更
+      
+    3. properties.ymlの編集:
+      'liaavmwa001'の設定値情報を複製し、'liaavmwa001'を'<ノード名>'または'<ノードのIP>'に変更
+      配下の各設定項目を値を実際の設定値に変更（IPADDR、NETWORK、BROADCAST、HOSTNAMEなど）
+
+  ・DB 
+    1. 定義ファイルの作成: spec/hosts/liaavmdb001_spec.jsonを複製し、ファイル名を"<ノード名>_spec.json"または"<ノードのIP>_spec.json"に変更
+    
+    2. 定義ファイル内容の編集:
+      'liaavmdb001'を'<ノード名>'または'<ノードのIP>'に変更
+      
+    3. properties.yml内容の編集:
+      'liaavmdb001'の設定値情報を複製し、'liaavmdb001'を'<ノード名>'または'<ノードのIP>'に変更
+      配下の各設定項目を値を実際の設定値に変更（IPADDR、NETWORK、BROADCAST、HOSTNAMEなど） 
+
+■個別実装の説明
+処理効率化のために行われている、shared/*_spec.rbへの独自実装の説明を行います。
+
+  ・1階層ループ
+    番号：01
+    
+    記述：
+    property['Layer1']['Layer2']...['LayerN'].each do |key, value|
+      ...
+    end
+    
+    説明:
+    以下のような記述のプロパティの取得を行う場合、１階層ループを使うことが可能です。
+      'LayerN':
+        'key1': 'value1'
+        'key2': 'value2'
+        ...
+        'key1N: 'valueN'
+    property['Layer1']['Layer2']...['LayerN'].eachは['LayerN']の一層下のプロパティの一覧を取得する。
+    do |key,value|は取得した一層下のプロパティの['keyX']部分をkeyに、'<valX>'をvalueに保存する。
+    ※key,valは変数名のため任意に指定が可能です
+
+  ・2階層ループ
+    番号：02
+    
+    記述：
+    #ここから1階層ループ開始
+    property['Layer1']['Layer2']...['LayerN'].each do |key, values|
+      #ここから2階層ループ開始
+      values.each do |k,v|
+        ...
+      end
+      #ここまで2階層ループ終了
+    end
+    #ここまで1階層ループ終了
+	
+	説明:
+    以下のような記述のプロパティの取得を行う場合、１階層ループを使うことが可能です。
+      'LayerN':
+        'key1': 
+          'key1_k1': 'key1_v1'
+          'key1_k2': 'key1_v2'
+	        ...
+          'key1_kN': 'key1_vN'
+        'key2': 
+          'key2_k1': 'key2_v1'
+          'key2_k2': 'key2_v2'
+	        ...
+          'key2_kN': 'key2_vN'
+        ...
+        'keyN': 
+          'keyN_k1': 'keyN_v1'
+	        ...
+    1階層ループは取得したプロパティの['keyX']部分をkeyに、残り('keyX_kY': 'keyX_vY')をvaluesに保存する。
+    2階層ループvalues.each do |k,v|はvaluesの一覧を取得し、'keyX_kY'部分をk,'keyX_vY'をvに保存する。
+    ※key,valは変数名のため任意に指定が可能です
+
+  ・if条件分岐
+    番号：03
+  
+    記述：
+	if <条件式1>
+      <処理1>
+	[elseif <条件式2>
+      <処理2>]
+	[else
+      <処理3>]
+	end	
+  
+    説明:
+    <条件式1>を評価
+      trueだった場合は<処理1>を実行し、条件分岐を終了する
+      falseだった場合、
+        elseifがある場合
+          <条件式2>を評価
+            trueだった場合は<処理2>を実行し、条件分岐を終了する
+            falseだった場合
+              elseがある場合、<処理3>を実行し、条件分岐を終了する
+              elseがない場合、条件分岐を終了する
+        elseifがない場合
+          elseがある場合、<処理3>を実行し、条件分岐を終了する
+          elseがない場合、条件分岐を終了する
+    ※if構文は必須で、elseifとelse構文はオプション。
+
+  ・unless条件分岐
+    番号：04
+  
+    記述：
+	unless <条件式> then
+      <処理>
+	end	
+	
+	説明:
+    <条件式>がfalseだった場合<処理>を実行する
+    <条件式>がtrueだった場合<処理>を実行しない

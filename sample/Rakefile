@@ -1,0 +1,30 @@
+# TO BE UPDATED
+#
+# 2015/12/01
+require 'rake'
+require 'rspec/core/rake_task'
+
+task :spec    => 'spec:all'
+task :default => :spec
+
+namespace :spec do
+  targets = []
+  Dir.glob('./spec/hosts/*').each do |host|                 # spec/hosts配下のファイルごと
+    target = /(.*)_spec.rb/.match(File.basename(host))[1]  # ファイル名からターゲットホストを定義
+    #target = host.match(/^(_spec.rb)/)[0]  # ファイル名からターゲットホストを定義
+    #target = 'scms-app1'  # ファイル名からターゲットホストを定義
+    targets << target
+  end
+
+  task :all     => targets
+  task :default => :all
+
+  targets.each do |target|                              # ターゲットホストごとに
+    RSpec::Core::RakeTask.new(target.to_sym) do |t| 
+      ENV['TARGET_HOST'] = target                  # spec_helper.rbに渡すホストを設定
+      t.pattern = "spec/hosts/#{target}_spec.rb" 
+      t.fail_on_error = false                            # エラーがあっても続行
+    end
+  end
+
+end
